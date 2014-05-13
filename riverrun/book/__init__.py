@@ -13,8 +13,6 @@ class Book(utils.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.authors = set(self.get('authors', []))
-        self.files = set(self.get('files', []))
 
     def path(self, ext):
         return config.library.format(
@@ -42,5 +40,6 @@ def add_file(input, isbn=None, **kwargs):
             )
         path = book.path(ebook.extension)
         ebook.copy_to(path)
-        book.files.add(path)
+        if path not in book.files:
+            book.files.append(path)
         book.save()

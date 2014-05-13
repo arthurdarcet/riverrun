@@ -3,6 +3,7 @@ import os.path
 
 from .. import config
 from ..book import Book
+from . import utils
 
 
 class App:
@@ -23,10 +24,9 @@ class App:
         },
     }
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
+    @utils.json_exposed
     def books(self):
-        return []
+        return list(Book.objects.find())
 
 
 def start(**kwargs):
