@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Riverrun</title>
+        <meta charset="utf-8">
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/index.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row books"></div>
+        </div>
+        <script type="text/html" id="book-template">
+            <div class="col-md-3">
+                {{title}}
+            </div>
+        </script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0-rc.3/handlebars.min.js"></script>
+        <script type="text/javascript">
+            var Riverrun = {};
+        </script>
+        <script src="static/index.js"></script>
+    </body>
+</html>

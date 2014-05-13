@@ -55,7 +55,6 @@ log_config = {
         },
         'cherrypy': {
             'level': logging.INFO if not args.quiet else logging.WARNING,
-            'propagate': False
         },
         'cherrypy.error': {
             'level': logging.WARNING

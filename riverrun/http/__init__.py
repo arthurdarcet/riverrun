@@ -1,16 +1,34 @@
 import cherrypy
-import logging
+import os.path
 
 from .. import config
-from . import root
+from ..book import Book
 
 
-logger = logging.getLogger(__name__)
+class App:
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+
+    config = {
+        '/': {
+            'log.access_log_format': '{h}, {s} "{r}"',
+        },
+        '/static': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': static_dir,
+            'tools.staticdir.match': r'index.(js|css)',
+        },
+        '/index': {
+            'tools.staticfile.on': True,
+            'tools.staticfile.filename': os.path.join(static_dir, 'index.html'),
+        },
+    }
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def books(self):
+        return []
+
 
 def start(**kwargs):
     cherrypy.config.update(config.http)
-    for module in (root,):
-        module.App().mount()
-    cherrypy.engine.start()
-    logger.info('Binded socket to %s:%d', config.http['server.socket_host'], config.http['server.socket_port'])
-    cherrypy.engine.block()
+    cherrypy.quickstart(App(), config=App.config)
