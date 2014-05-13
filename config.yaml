@@ -1,0 +1,11 @@
+http:
+    server.socket_host: 0.0.0.0
+    server.socket_port: 1111
+    engine.autoreload.on: true
+
+mongo:
+    host: 127.0.0.1
+    database: riverrun
+    tests: riverrun-tests
+
+library: "./library/{authors} - {title}.{ext}"

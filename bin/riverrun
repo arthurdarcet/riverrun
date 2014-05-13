@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+import os.path
+import runpy
+import sys
+
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+runpy.run_module('riverrun')
