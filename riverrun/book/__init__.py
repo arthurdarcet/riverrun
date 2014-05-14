@@ -13,13 +13,32 @@ class Book(utils.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._epub = None
+        if 'files' not in self:
+            self.files = {}
+        if 'authors' not in self:
+            self.authors = []
 
-    def path(self, ext):
+    def _path(self, ext):
         return config.library.format(
             authors=', '.join(sorted(self.authors)),
             title=self.title,
             ext=ext,
         )
+
+    @property
+    def cover(self):
+        if self.epub is not None:
+            return self.epub.cover
+
+    @property
+    def epub(self):
+        if self._epub is None and 'epub' in self.files:
+            self._epub = self.get_file('epub')
+        return self._epub
+
+    def get_file(self, extension):
+        return files.parse(self.files[extension])
 
 
 def add_file(input, isbn=None, **kwargs):
@@ -36,10 +55,9 @@ def add_file(input, isbn=None, **kwargs):
                 isbn=isbn,
                 title=ebook.title,
                 description=ebook.description,
-                authors=ebook.authors,
+                authors=list(ebook.authors),
             )
-        path = book.path(ebook.extension)
+        path = book._path(ebook.extension)
         ebook.copy_to(path)
-        if path not in book.files:
-            book.files.append(path)
+        book.files[ebook.extension] = path
         book.save()

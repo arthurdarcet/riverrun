@@ -36,7 +36,7 @@ def json_exposed(fn):
         except Exception as e:
             msg = '{}: {}'.format(e.__class__.__qualname__, e)
             logger.error(msg)
-            logger.error(traceback.format_exc())
+            logger.debug(traceback.format_exc())
             code = 500
             value = {'status': 500, 'error': msg}
         cherrypy.response.headers['Content-Type'] = 'application/json'

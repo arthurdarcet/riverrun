@@ -2,13 +2,16 @@ from . import epub
 
 
 PARSERS = {
-    mod.File.extension: mod.File
+    ext: mod.File
     for mod in (
         epub,
     )
+    for ext in getattr(mod.File, 'extensions', (mod.File.extension,))
 }
 
 def parse(f):
+    if isinstance(f, str):
+        f = open(f, 'rb')
     ext = f.name.rsplit('.', 1)[1].lower()
     try:
         return PARSERS[ext](f)

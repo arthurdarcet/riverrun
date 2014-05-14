@@ -15,7 +15,7 @@ class SONManipulator(pymongo.son_manipulator.SONManipulator):
             if isinstance(v, set):
                 son[k] = list(v)
             elif isinstance(v, dict):
-                son[k] = self.transform_incoming(son, collection)
+                son[k] = self.transform_incoming(v, collection)
         return son
 
     def transform_outgoing(self, son, collection):
@@ -60,19 +60,15 @@ class MetaModel(type):
 
 class Model(dict, metaclass=MetaModel):
     def save(self):
-        self.objects.save({k: v for k, v in self.items() if not k.startswith('_') or k == '_id'})
-
-    @property
-    def _id(self):
         if '_id' not in self:
             self['_id'] = bson.ObjectId()
-        return self['_id']
+        self.objects.save({k: v for k, v in self.items() if not k.startswith('_') or k == '_id'})
 
     def __getattr__(self, key):
-        try:
+        if key in self:
             return self[key]
-        except KeyError as err:
-            raise AttributeError(err)
+        else:
+            raise AttributeError(key)
 
     def __setattr__(self, key, val):
         self[key] = val

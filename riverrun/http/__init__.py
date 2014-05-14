@@ -1,3 +1,4 @@
+import bson
 import cherrypy
 import os.path
 
@@ -26,7 +27,17 @@ class App:
 
     @utils.json_exposed
     def books(self):
-        return list(Book.objects.find())
+        return Book.objects.find()
+
+    @cherrypy.expose
+    def cover(self, _id):
+        try:
+            data = Book.objects.get(_id=bson.ObjectId(_id)).cover
+        except Book.objects.DoesNotExist:
+            raise cherrypy.NotFound()
+        else:
+            cherrypy.response.headers['Content-Type'] = 'image/' + data.name.rsplit('.', 1)[1]
+            return data
 
 
 def start(**kwargs):

@@ -40,6 +40,10 @@ class File:
     def description(self):
         raise NotImplementedError()
 
+    @property
+    def cover(self):
+        raise NotImplementedError()
+
     def copy_to(self, path):
         try:
             os.mkdir(os.path.dirname(path))

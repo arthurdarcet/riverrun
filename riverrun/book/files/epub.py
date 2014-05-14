@@ -1,4 +1,6 @@
 import epub
+import io
+import os.path
 
 from . import base
 
@@ -29,3 +31,22 @@ class File(base.File):
     @property
     def description(self):
         return self._epub.opf.metadata.description
+
+    @property
+    def cover(self):
+        # same method as https://github.com/kovidgoyal/calibre/blob/master/src/calibre/ebooks/metadata/opf2.py#L524
+        try:
+            cover = next(filter(
+                lambda m: m[0].lower() == 'cover',
+                self._epub.opf.metadata.metas,
+            ))[1]
+        except StopIteration:
+            return None
+        else:
+            href = self._epub.get_item(cover).href
+            data = io.BytesIO(self.read(href))
+            data.name = os.path.basename(href)
+            return data
+
+    def read(self, href):
+        return self._epub.read_item(href)
