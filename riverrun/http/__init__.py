@@ -1,11 +1,23 @@
 import bson
 import cherrypy
+import functools
 import os.path
+import requests
 
 from .. import config
 from ..book import Book
 from . import utils
 
+
+def book_or_404(_id):
+    try:
+        _id = bson.ObjectId(_id)
+    except bson.errors.InvalidId:
+        raise cherrypy.NotFound()
+    try:
+        return Book.objects.get(_id=_id)
+    except Book.objects.DoesNotExist:
+        raise cherrypy.NotFound()
 
 class App:
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
@@ -23,6 +35,10 @@ class App:
             'tools.staticfile.on': True,
             'tools.staticfile.filename': os.path.join(static_dir, 'index.html'),
         },
+        r'/reader/[a-z0-9]{24}': {
+            'tools.staticfile.on': True,
+            'tools.staticfile.filename': os.path.join(static_dir, 'reader.html'),
+        }
     }
 
     @utils.json_exposed
@@ -31,13 +47,26 @@ class App:
 
     @cherrypy.expose
     def cover(self, _id):
-        try:
-            data = Book.objects.get(_id=bson.ObjectId(_id)).cover
-        except Book.objects.DoesNotExist:
-            raise cherrypy.NotFound()
-        else:
-            cherrypy.response.headers['Content-Type'] = 'image/' + data.name.rsplit('.', 1)[1]
-            return data
+        data = book_or_404(_id).cover
+        cherrypy.response.headers['Content-Type'] = 'image/' + data.name.rsplit('.', 1)[1]
+        return data
+
+    @cherrypy.expose
+    def reader(self, _):
+        with open(os.path.join(self.static_dir, 'reader.html')) as f:
+            return f.read()
+
+    @cherrypy.expose
+    @functools.lru_cache()
+    def epub_js(self, *args):
+        return requests.get('http://futurepress.github.io/epub.js/' + '/'.join(args)).content
+
+    @cherrypy.expose
+    def get(self, n):
+        _id, extension = n.rsplit('.', 1)
+        ebook = book_or_404(_id).get_file(extension)
+        cherrypy.response.headers['Content-Type'] = ebook.mimetype
+        return ebook.save()
 
 
 def start(**kwargs):

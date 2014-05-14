@@ -7,6 +7,7 @@ from . import base
 
 class File(base.File):
     extension = 'epub'
+    mimetype = 'application/epub+zip'
 
     def __init__(self, infile):
         self._epub = epub.open_epub(infile)

@@ -5,6 +5,8 @@ import shutil
 
 class File:
     extension = None
+    mimetype = None
+
     def __init__(self, infile):
         if isinstance(infile, io.IOBase):
             infile = infile.name
@@ -50,5 +52,12 @@ class File:
         except OSError:
             pass
         with open(path, 'wb') as out:
-            self._infile.seek(0)
-            shutil.copyfileobj(self._infile, out)
+            self.save(out)
+
+    def save(self, out=None):
+        if out is None:
+            out = io.BytesIO()
+        self._infile.seek(0)
+        shutil.copyfileobj(self._infile, out)
+        out.seek(0)
+        return out
