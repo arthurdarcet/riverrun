@@ -64,9 +64,10 @@ class App:
     @cherrypy.expose
     def get(self, n):
         _id, extension = n.rsplit('.', 1)
-        ebook = book_or_404(_id).get_file(extension)
-        cherrypy.response.headers['Content-Type'] = ebook.mimetype
-        return ebook.save()
+        book = book_or_404(_id)
+        with book.get_ebook(extension) as ebook:
+            cherrypy.response.headers['Content-Type'] = ebook.mimetype
+            return ebook.save()
 
 
 def start(**kwargs):

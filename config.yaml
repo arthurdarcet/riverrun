@@ -8,4 +8,6 @@ mongo:
     database: riverrun
     tests: riverrun-tests
 
+convert: ebook-convert
+
 library: "./library/{authors} - {title}.{ext}"

@@ -2,14 +2,13 @@ import epub
 import io
 import os.path
 
-from . import base
+from .ebook import Ebook
 
 
-class File(base.File):
-    extension = 'epub'
-    mimetype = 'application/epub+zip'
-
+class Epub(Ebook):
     def __init__(self, infile):
+        if isinstance(infile, io.IOBase):
+            infile = infile.name
         self._epub = epub.open_epub(infile)
         super().__init__(infile)
 
@@ -27,7 +26,12 @@ class File(base.File):
 
     @property
     def authors(self):
-        return self.prepare_authors(c[0] for c in self._epub.opf.metadata.creators)
+        for c in self._epub.opf.metadata.creators:
+            author = c[0]
+            if ', ' in author:
+                f, l = author.split(', ', 1)
+                author = l + ' ' + f
+            yield author
 
     @property
     def description(self):
@@ -44,10 +48,15 @@ class File(base.File):
         except StopIteration:
             return None
         else:
-            href = self._epub.get_item(cover).href
-            data = io.BytesIO(self.read(href))
-            data.name = os.path.basename(href)
-            return data
+            return self.read(cover)
 
-    def read(self, href):
-        return self._epub.read_item(href)
+    def read(self, id_):
+        href = self._epub.get_item(id_).href
+        data = io.BytesIO(self._epub.read_item(href))
+        data.name = os.path.basename(href)
+        return data
+
+    @classmethod
+    def convert_from(cls, ebook):
+        return cls(ebook.convert_to('epub').infile)
+

@@ -3,3 +3,5 @@ epub     >= 0.5.2
 pymongo  >= 2.7
 pyyaml   >= 3.10
 nose     >= 1.3.1
+requests >= 2.2.1
+sh       >= 1.09
