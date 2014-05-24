@@ -1,5 +1,6 @@
 from . import setup
 from .book import Book
+from .book import Ebook
 
 
 def http(**kwargs):

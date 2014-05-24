@@ -1,3 +1,4 @@
+import base64
 import bson
 import cherrypy
 import functools
@@ -48,9 +49,12 @@ class App(utils.BaseApp):
 
     @cherrypy.expose
     def cover(self, _id):
-        data = book_or_404(_id).cover
-        cherrypy.response.headers['Content-Type'] = 'image/' + data.name.rsplit('.', 1)[1]
-        return data
+        book = book_or_404(_id)
+        if 'cover' in book:
+            cherrypy.response.headers['Content-Type'] = 'image/' + book['cover']['extension']
+            return base64.b64decode(book['cover']['data'])
+        else:
+            raise cherrypy.NotFound()
 
     @cherrypy.expose
     def reader(self, _):

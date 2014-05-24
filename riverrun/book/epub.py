@@ -1,3 +1,4 @@
+import base64
 import epub
 import io
 import os.path
@@ -46,7 +47,11 @@ class Epub(Ebook):
         except StopIteration:
             return None
         else:
-            return self.read(cover)
+            data = self.read(cover)
+            return {
+                'extension': data.name.rsplit('.', 1)[1],
+                'data': base64.b64encode(data.read()),
+            }
 
     def read(self, id_):
         href = self._epub.get_item(id_).href

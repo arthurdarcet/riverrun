@@ -25,6 +25,8 @@ class Book(utils.Model):
                 book = cls.objects.get(**{'files.epub': book._path('epub')})
             except Book.DoesNotExist:
                 pass
+            if 'cover' not in book:
+                book['cover'] = epub.cover
             book.add_file(ebook, override=True)
             book.add_file(epub, override=False)
             return book
@@ -42,10 +44,6 @@ class Book(utils.Model):
             title=self['title'],
             ext=ext,
         )
-
-    @property
-    def cover(self):
-        return self.epub.cover
 
     @property
     def epub(self):
