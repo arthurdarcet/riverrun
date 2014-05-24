@@ -1,7 +1,3 @@
-.books {
-    margin-top: 20px;
-}
-
 .cover {
     float: left;
     margin: 0 13px 0 0 !important;
@@ -44,4 +40,24 @@
 
 .description, .title, .authors {
     padding: 0 7px 0 13px;
+}
+
+.search {
+    position: relative;
+    width: 40%;
+    margin: 30px auto;
+    color: rgb(51, 51, 51);
+}
+.search .glyphicon {
+    position: absolute;
+    right: 20px;
+    top: 17px;
+    color: #BBB;
+}
+.search input {
+    outline: none;
+    padding: 14px 34px 14px 20px;
+    border: 1px solid rgb(167, 166, 170);
+    border-radius: 50px;
+    width: 100%;
 }
