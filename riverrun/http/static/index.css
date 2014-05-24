@@ -1,0 +1,32 @@
+.books {
+    margin-top: 20px;
+}
+
+.cover {
+    height: 300px !important;
+    float: left;
+    clear: both;
+    padding: 0;
+    margin: 0 13px 0 0 !important;
+    border-radius: 3px 0 0 3px;
+}
+.book .thumbnail {
+    padding: 0;
+    height: 302px;
+    overflow: scroll;
+}
+
+.authors li:after {
+    content: ", ";
+}
+.authors li:last-child:after {
+    content: "";
+}
+.authors li {
+    display: inline;
+    list-style: none;
+}
+
+.description, .title, .authors {
+    padding: 0 7px 0 13px;
+}

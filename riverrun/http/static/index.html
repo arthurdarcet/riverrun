@@ -7,24 +7,26 @@
         <link href="/static/index.css" rel="stylesheet">
     </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row books"></div>
         </div>
         <script type="text/html" id="book-template">
-            <div class="book">
-                <img src="/cover/{{_id}}" class="cover">
-                <h4 class="title">{{title}}</h4>
-                <ul class="authors">
-                    {{#authors}}
-                        <li>{{this}}</li>
-                    {{/authors}}
-                </ul>
-                <p class="description">{{description}}</p>
-                <span class="links">
-                    <a href="/reader/{{_id}}">Read</a>
-                    <a href="/get/{{_id}}.epub">Epub</a>
-                    <a href="/get/{{_id}}.mobi">Mobi</a>
-                </span>
+            <div class="book col-md-4">
+                <div class="thumbnail">
+                    <img src="/cover/{{_id}}" alt="{{title}}" class="cover">
+                    <h4>{{title}}</h4>
+                    <ul class="authors">
+                        {{#authors}}
+                            <li>{{this}}</li>
+                        {{/authors}}
+                    </ul>
+                    <p class="links">
+                        <a href="/reader/{{_id}}" class="btn btn-sm btn-primary">Read</a>
+                        <a href="/get/{{_id}}.epub" class="btn btn-sm btn-default">Epub</a>
+                        <a href="/get/{{_id}}.mobi" class="btn btn-sm btn-default">Mobi</a>
+                    </p>
+                    <p class="description">{{description}}</p>
+                </div>
             </div>
         </script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
