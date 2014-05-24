@@ -13,18 +13,20 @@
         <script type="text/html" id="book-template">
             <div class="book col-md-4">
                 <div class="thumbnail">
-                    <img src="/cover/{{_id}}" alt="{{title}}" class="cover">
+                    <div class="cover">
+                        <img src="/cover/{{_id}}" alt="{{title}}">
+                        <div class="links">
+                            <a href="/reader/{{_id}}" class="btn btn-sm btn-primary">Read</a>
+                            <a href="/get/{{_id}}.epub" class="btn btn-sm btn-default">Epub</a>
+                            <a href="/get/{{_id}}.mobi" class="btn btn-sm btn-default">Mobi</a>
+                        </div>
+                    </div>
                     <h4>{{title}}</h4>
                     <ul class="authors">
                         {{#authors}}
                             <li>{{this}}</li>
                         {{/authors}}
                     </ul>
-                    <p class="links">
-                        <a href="/reader/{{_id}}" class="btn btn-sm btn-primary">Read</a>
-                        <a href="/get/{{_id}}.epub" class="btn btn-sm btn-default">Epub</a>
-                        <a href="/get/{{_id}}.mobi" class="btn btn-sm btn-default">Mobi</a>
-                    </p>
                     <p class="description">{{description}}</p>
                 </div>
             </div>

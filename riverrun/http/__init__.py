@@ -42,7 +42,7 @@ class App(utils.BaseApp):
 
     @utils.json_exposed
     def books(self):
-        return Book.objects.find()
+        return list(Book.objects.find())[:50]
 
     @cherrypy.expose
     def cover(self, _id):

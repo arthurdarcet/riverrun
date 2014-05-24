@@ -3,12 +3,23 @@
 }
 
 .cover {
-    height: 300px !important;
     float: left;
-    clear: both;
-    padding: 0;
     margin: 0 13px 0 0 !important;
+    padding: 0;
     border-radius: 3px 0 0 3px;
+    height: 300px !important;
+}
+.cover img {
+    border-radius: 3px 0 0 0;
+    height: 100%;
+}
+.cover .links {
+    position: relative;
+    bottom: 40px;
+    text-align: center;
+}
+.cover .links a {
+    opacity: 0.97;
 }
 .book .thumbnail {
     padding: 0;
@@ -22,7 +33,11 @@
 .authors li:last-child:after {
     content: "";
 }
+.authors li:nth-last-child(2):after {
+    content: " and ";
+}
 .authors li {
+    font-style: italic;
     display: inline;
     list-style: none;
 }
