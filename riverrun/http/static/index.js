@@ -10,7 +10,7 @@ Riverrun.Views.Book = Backbone.View.extend({
         this.render();
     },
 
-    render: function(append) {
+    render: function() {
         var html = Riverrun.templates.book(this.model.attributes);
         var old_el = this.$el;
         this.setElement(html);
@@ -19,6 +19,9 @@ Riverrun.Views.Book = Backbone.View.extend({
 });
 
 Riverrun.Collections.Books = Backbone.Collection.extend({
+    url: '/books',
+    current_page: -1,
+
     initialize: function() {
         this.container = $('.books');
 
@@ -28,13 +31,21 @@ Riverrun.Collections.Books = Backbone.Collection.extend({
         }, this));
     },
 
-    refresh: function() {
+    load_next_page: function(page) {
+        if (this.loading) {
+            return;
+        }
+
+        this.current_page++;
+        this.loading = true;
+
         $.ajax({
             type: 'GET',
-            url: '/books',
+            url: this.url + '?' + $.param({page: this.current_page}),
             context: this
         }).done(function(data, status) {
             this.add(data);
+            this.loading = false;
         });
     }
 });
@@ -45,5 +56,10 @@ $(document).ready(function() {
     };
     Riverrun.books = new Riverrun.Collections.Books();
 
-    Riverrun.books.refresh();
+    Riverrun.books.load_next_page();
+    $(window).scroll(function(){
+        if ($(window).scrollTop() >= $(document).height() - $(window).height() - 200) {
+            Riverrun.books.load_next_page();
+        }
+    });
 });

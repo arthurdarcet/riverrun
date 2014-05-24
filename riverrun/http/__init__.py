@@ -41,8 +41,12 @@ class App(utils.BaseApp):
     }
 
     @utils.json_exposed
-    def books(self):
-        return list(Book.objects.find())[:50]
+    def books(self, page=0):
+        try:
+            page = int(page)
+        except TypeError:
+            raise cherrypy.NotFound()
+        return Book.objects.find().skip(30 * page).limit(30)
 
     @cherrypy.expose
     def cover(self, _id):
