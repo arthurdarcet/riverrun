@@ -22,3 +22,9 @@ def add_file(input, isbn=None, **kwargs):
         with Ebook(path) as ebook:
             book.add_file(ebook)
     book.save()
+
+def ensure_indexes(**kwargs):
+    Book.objects.ensure_index(
+        [('title', 'text'), ('authors', 'text'), ('description', 'text')],
+        weights={'title': 5, 'authors': 5},
+    )

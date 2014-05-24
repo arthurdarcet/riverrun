@@ -19,6 +19,10 @@ subparse.add_argument('input', type=argparse.FileType('rb'), help='ebook file', 
 subparse.add_argument('-i', '--isbn', action='store', help="ISBN (optional)", default=None, nargs='?')
 subparse.set_defaults(command='add_file')
 
+###
+subparse = subparsers.add_parser('ensure-indexes', help='Create the Mongo indexes')
+subparse.set_defaults(command='ensure_indexes')
+
 args = parser.parse_args()
 
 

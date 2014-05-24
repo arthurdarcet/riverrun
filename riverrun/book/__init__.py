@@ -65,5 +65,10 @@ class Book(utils.Model):
         ebook.copy_to(path)
         self['files'][ebook.extension] = path
 
+    def save(self):
+        if 'isbn' in self and self['isbn'] is None:
+            del self['isbn']
+        return super().save()
+
     def __repr__(self):
         return '<Book {!r}'.format(self['title'])
