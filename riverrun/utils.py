@@ -25,19 +25,12 @@ class SONManipulator(pymongo.son_manipulator.SONManipulator):
 mongo_client = pymongo.MongoClient(config.mongo.host)
 
 class Manager:
-    class DoesNotExist(Exception):
-        pass
-
     def __init__(self, cls):
         self.cls = cls
-        self.son_manipulator = SONManipulator(cls)
-        self.set_connection(config.mongo.database, cls.collection)
-
-    def set_connection(self, database=None, collection=None):
-        if database is not None:
-            self.database = mongo_client[database]
-            self.database.add_son_manipulator(self.son_manipulator)
-        self.collection = self.database[collection or self.collection.name]
+        database = mongo_client[config.mongo.database]
+        database.add_son_manipulator(SONManipulator(cls))
+        self.collection = database[cls.collection]
+        cls.DoesNotExist = type(cls.__name__ + '.DoesNotExist', (cls.DoesNotExist, ), {})
 
     def __getattr__(self, k):
         return getattr(self.collection, k)
@@ -45,10 +38,9 @@ class Manager:
     def get(self, **kwargs):
         data = self.find_one(kwargs)
         if data is None:
-            raise self.DoesNotExist('{} not found for query {}'.format(self.cls.__name__, kwargs))
+            raise self.cls.DoesNotExist(kwargs)
         else:
             return data
-
 
 class MetaModel(type):
     def __new__(cls, name, bases, attrs):
@@ -57,21 +49,20 @@ class MetaModel(type):
             res.objects = Manager(res)
         return res
 
-
 class Model(dict, metaclass=MetaModel):
-    def save(self):
+    class DoesNotExist(Exception):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if '_id' not in self:
             self['_id'] = bson.ObjectId()
-        self.objects.save({k: v for k, v in self.items() if not k.startswith('_') or k == '_id'})
 
-    def __getattr__(self, key):
-        if key in self:
-            return self[key]
-        else:
-            raise AttributeError(key)
+    def save(self):
+        self.objects.save(self)
 
-    def __setattr__(self, key, val):
-        self[key] = val
+    def __hash__(self):
+        return hash(self['_id'])
 
-    def __delattr__(self, key):
-        del self[key]
+    def __repr__(self):
+        return '<{} {!r}>'.format(self.__class__.__name__, self['_id'])

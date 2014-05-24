@@ -6,7 +6,6 @@ http:
 mongo:
     host: 127.0.0.1
     database: riverrun
-    tests: riverrun-tests
 
 convert: ebook-convert
 

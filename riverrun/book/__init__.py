@@ -1,4 +1,3 @@
-import functools
 import logging
 import os.path
 
@@ -24,39 +23,37 @@ class Book(utils.Model):
             )
             try:
                 book = cls.objects.get(**{'files.epub': book._path('epub')})
-            except Book.objects.DoesNotExist:
+            except Book.DoesNotExist:
                 pass
             book.add_file(ebook, override=True)
             book.add_file(epub, override=False)
-            book.save()
             return book
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'files' not in self:
-            self.files = {}
+            self['files'] = {}
         if 'authors' not in self:
-            self.authors = []
+            self['authors'] = []
 
     def _path(self, ext):
         return config.library.format(
-            authors=', '.join(sorted(self.authors)),
-            title=self.title,
+            authors=', '.join(sorted(self['authors'])),
+            title=self['title'],
             ext=ext,
         )
 
     @property
-    @functools.lru_cache()
     def cover(self):
         return self.epub.cover
 
     @property
     def epub(self):
-        return self.get_ebook('epub')
+        return Epub(self['files']['epub'])
 
     def get_ebook(self, extension):
-        if extension in self.files:
-            return Ebook(self.files[extension])
+        if extension in self['files']:
+            return Ebook(self['files'][extension])
         else:
             ebook = self.epub.convert_to(extension)
             self.add_file(ebook)
@@ -64,14 +61,11 @@ class Book(utils.Model):
             return ebook
 
     def add_file(self, ebook, override=True):
-        if ebook.extension in self.files and not override:
+        if ebook.extension in self['files'] and not override:
             return
         path = self._path(ebook.extension)
         ebook.copy_to(path)
-        self.files[ebook.extension] = path
+        self['files'][ebook.extension] = path
 
-
-def add_file(input, isbn=None, **kwargs):
-    with Ebook(input) as ebook:
-        Book.from_ebook(ebook)
-
+    def __repr__(self):
+        return '<Book {!r}'.format(self['title'])

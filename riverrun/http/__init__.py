@@ -16,10 +16,11 @@ def book_or_404(_id):
         raise cherrypy.NotFound()
     try:
         return Book.objects.get(_id=_id)
-    except Book.objects.DoesNotExist:
+    except Book.DoesNotExist:
         raise cherrypy.NotFound()
 
-class App:
+class App(utils.BaseApp):
+    mount_to = '/'
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
 
     config = {
@@ -70,6 +71,8 @@ class App:
             return ebook.save()
 
 
-def start(**kwargs):
+def start():
     cherrypy.config.update(config.http)
-    cherrypy.quickstart(App(), config=App.config)
+    App().mount()
+    cherrypy.engine.start()
+    cherrypy.engine.block()

@@ -9,8 +9,9 @@ import traceback
 logger = logging.getLogger(__name__)
 
 class JSONEncoder(json.JSONEncoder):
-    def __init__(self):
-        super().__init__(separators=(',', ':'))
+    def __init__(self, *args, **kwargs):
+        kwargs['separators'] = ',', ':'
+        super().__init__(*args, **kwargs)
     def default(self, o):
         if isinstance(o, bson.ObjectId):
             return str(o)
@@ -21,10 +22,9 @@ class JSONEncoder(json.JSONEncoder):
         else:
             return list(iterable)
         return super().default(o)
-json_encoder = JSONEncoder()
-
 
 def json_exposed(fn):
+    @cherrypy.expose
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         try:
@@ -41,6 +41,17 @@ def json_exposed(fn):
             value = {'status': 500, 'error': msg}
         cherrypy.response.headers['Content-Type'] = 'application/json'
         cherrypy.response.status = code
-        return json_encoder.encode(value).encode('utf8')
-    wrapper.exposed = True
+        return json.dumps(value, cls=JSONEncoder).encode('utf-8')
     return wrapper
+
+class _LogManager(cherrypy._cplogging.LogManager):
+    def __init__(self):
+        self.error_log = logging.getLogger('cherrypy.error')
+        self.access_log = logging.getLogger('cherrypy.access')
+        self.access_log_format =  '{h}, {s} "{r}"'
+
+class BaseApp:
+    def mount(self):
+        app = cherrypy.Application(self, self.mount_to, getattr(self, 'config', {'/': {}}))
+        app.log = _LogManager()
+        cherrypy.tree.mount(app)

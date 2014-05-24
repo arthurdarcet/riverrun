@@ -1,10 +1,12 @@
-import riverrun
+import unittest
+
+from riverrun import http
 
 
-class TestHttp:
+class TestHttp(unittest.TestCase):
     @classmethod
-    def setup_class(cls):
-        cls.app = riverrun.http.App()
+    def setUpClass(cls):
+        cls.app = http.App()
 
     def test_books(self):
         self.app.books()

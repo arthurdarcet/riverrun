@@ -1,15 +1,14 @@
-import os.path
-import sys
+import os
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from riverrun import config
+from riverrun import setup
 
-import riverrun
-import riverrun.book
+class args:
+    config = 'test'
+    debug = False
+    quiet = True
+
+setup(args)
 
 fixtures = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fixtures')
-db = riverrun.config.mongo.tests
-os.system('mongorestore --drop -d {} {} 2>&1 > /dev/null'.format(db, os.path.join(fixtures, 'db')));
-riverrun.book.Book.objects.set_connection(db)
-
-
-from .http import *
+os.system('mongorestore --drop -d {} {} 2>&1 > /dev/null'.format(config.mongo.database, os.path.join(fixtures, 'db')))
