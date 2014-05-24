@@ -36,6 +36,8 @@ class Ebook:
             return 'application/octet-stream'
 
     def convert_to(self, extension):
+        if self.extension == extension:
+            return self
         tmp = tempfile.NamedTemporaryFile(suffix='.' + extension)
         _convert(self.infile.name, tmp.name)
         return self.__class__(tmp)
