@@ -44,6 +44,7 @@ def json_exposed(fn):
         return json.dumps(value, cls=JSONEncoder).encode('utf-8')
     return wrapper
 
+
 class _LogManager(cherrypy._cplogging.LogManager):
     def __init__(self):
         self.error_log = logging.getLogger('cherrypy.error')

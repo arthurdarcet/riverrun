@@ -25,9 +25,6 @@ class App(utils.BaseApp):
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
 
     config = {
-        '/': {
-            'log.access_log_format': '{h}, {s} "{r}"',
-        },
         '/static': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': static_dir,

@@ -9,7 +9,7 @@ def http(**kwargs):
     http.start()
 
 def add_file(input, isbn=None, **kwargs):
-    with Ebook(input) as ebook:
+    with Ebook(input[0]) as ebook:
         try:
             if isbn is None:
                 raise Book.DoesNotExist
@@ -18,5 +18,7 @@ def add_file(input, isbn=None, **kwargs):
             book = Book.from_ebook(ebook)
         else:
             book.add_file(ebook)
-        finally:
-            book.save()
+    for path in input[1:]:
+        with Ebook(path) as ebook:
+            book.add_file(ebook)
+    book.save()
