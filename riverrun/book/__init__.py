@@ -70,5 +70,13 @@ class Book(utils.Model):
             del self['isbn']
         return super().save()
 
+    def to_dict(self):
+        return {
+            'id': str(self['_id']),
+            'title': self['title'],
+            'authors': self['authors'],
+            'description': self['description'],
+        }
+
     def __repr__(self):
         return '<Book {!r}'.format(self['title'])

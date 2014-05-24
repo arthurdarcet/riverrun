@@ -20,6 +20,14 @@ def book_or_404(_id):
     except Book.DoesNotExist:
         raise cherrypy.NotFound()
 
+def books_to_json(fn):
+    @functools.wraps(fn)
+    @utils.json_exposed
+    def wrapper(*args, **kwargs):
+        return [book.to_dict() for book in fn(*args, **kwargs)]
+    return wrapper
+
+
 class App(utils.BaseApp):
     mount_to = '/'
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
@@ -40,13 +48,18 @@ class App(utils.BaseApp):
         }
     }
 
-    @utils.json_exposed
-    def books(self, page=0):
-        try:
-            page = int(page)
-        except TypeError:
-            raise cherrypy.NotFound()
-        return Book.objects.find().skip(30 * page).limit(30)
+    @books_to_json
+    @utils.paginated
+    def books(self):
+        return Book.objects.find()
+
+    @books_to_json
+    @utils.paginated
+    def search(self, q):
+        return Book.objects.find(
+            {'$text': {'$search': q}},
+            {'score': {'$meta': 'textScore'}},
+        ).sort([('score', {'$meta': 'textScore'})])
 
     @cherrypy.expose
     def cover(self, _id):
