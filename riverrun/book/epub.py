@@ -7,13 +7,11 @@ from .ebook import Ebook
 
 class Epub(Ebook):
     def __init__(self, infile):
-        if isinstance(infile, io.IOBase):
-            infile = infile.name
-        self._epub = epub.open_epub(infile)
         super().__init__(infile)
+        self.infile.seek(0)
+        self._epub = epub.open_epub(self.infile)
 
     def close(self):
-        super().close()
         self._epub.close()
 
     @property

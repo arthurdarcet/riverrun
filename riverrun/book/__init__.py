@@ -1,3 +1,4 @@
+import functools
 import logging
 import os.path
 
@@ -12,9 +13,26 @@ logger = logging.getLogger(__name__)
 class Book(utils.Model):
     collection = 'books'
 
+    @classmethod
+    def from_ebook(cls, ebook):
+        with Epub.convert_from(ebook) as epub:
+            book = Book(
+                isbn=epub.isbn,
+                title=epub.title,
+                description=epub.description,
+                authors=list(epub.authors),
+            )
+            try:
+                book = cls.objects.get(**{'files.epub': book._path('epub')})
+            except Book.objects.DoesNotExist:
+                pass
+            book.add_file(ebook, override=True)
+            book.add_file(epub, override=False)
+            book.save()
+            return book
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._epub = None
         if 'files' not in self:
             self.files = {}
         if 'authors' not in self:
@@ -28,15 +46,13 @@ class Book(utils.Model):
         )
 
     @property
+    @functools.lru_cache()
     def cover(self):
-        if self.epub is not None:
-            return self.epub.cover
+        return self.epub.cover
 
     @property
     def epub(self):
-        if self._epub is None and 'epub' in self.files:
-            self._epub = self.get_ebook('epub')
-        return self._epub
+        return self.get_ebook('epub')
 
     def get_ebook(self, extension):
         if extension in self.files:
@@ -57,22 +73,5 @@ class Book(utils.Model):
 
 def add_file(input, isbn=None, **kwargs):
     with Ebook(input) as ebook:
-        with Epub.convert_from(ebook) as epub:
-            if isbn is None:
-                isbn = epub.isbn
+        Book.from_ebook(ebook)
 
-            if isbn is None:
-                raise ValueError('No ISBN found in file {!r}'.format(input))
-
-            book = Book.objects.find_one({'isbn': isbn})
-            if book is None:
-                book = Book(
-                    isbn=isbn,
-                    title=epub.title,
-                    description=epub.description,
-                    authors=list(epub.authors),
-                )
-
-            book.add_file(ebook, override=True)
-            book.add_file(epub, override=False)
-            book.save()

@@ -24,12 +24,6 @@ class Ebook:
     def close(self):
         self.infile.close()
 
-    @classmethod
-    def convert_from(cls, ebook):
-        tmp = tempfile.NamedTemporaryFile(suffix=cls.extension)
-        convert(ebook.infile.name, tmp.name)
-        return cls(tmp)
-
     @property
     def extension(self):
         return self.infile.name.rsplit('.', 1)[1]
