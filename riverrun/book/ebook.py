@@ -40,7 +40,7 @@ class Ebook:
             return self
         tmp = tempfile.NamedTemporaryFile(suffix='.' + extension)
         _convert(self.infile.name, tmp.name)
-        return self.__class__(tmp)
+        return Ebook(tmp)
 
     def copy_to(self, path):
         try:
