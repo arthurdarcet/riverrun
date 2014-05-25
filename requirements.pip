@@ -1,7 +1,6 @@
 cherrypy >= 3.2.4
-epub     >= 0.5.2
+epub     >= 0.5.1
 pymongo  >= 2.7
 pyyaml   >= 3.10
-nose2    >= 0.4.7
 requests >= 2.2.1
 sh       >= 1.09

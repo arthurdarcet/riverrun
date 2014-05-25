@@ -1,15 +1,15 @@
 import logging as _logging
 import logging.config as _logging_config
 import os.path
+import pkg_resources
 import yaml
 
 
+logger = _logging.getLogger(__name__)
+
 class _config(dict):
-    def load(self, cfg):
-        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', cfg + '.yaml')
-        if os.path.exists(path):
-            with open(path, 'r') as f:
-                self.update(self.create(yaml.load(f)))
+    def load(self, data):
+        self.update(self.create(yaml.load(data)))
 
     @classmethod
     def create(cls, o):
@@ -37,8 +37,10 @@ class _config(dict):
         super().__setitem__(k, self.create(v))
 
     def setup(self, args):
-        self.load('base')
-        self.load(args.config)
+        with open(os.path.join(os.path.dirname(__file__), 'config.yaml')) as f:
+            self.load(f)
+        if args.config is not None:
+            self.load(args.config)
         self.debug = args.debug
 
 config = _config()

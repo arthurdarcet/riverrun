@@ -3,6 +3,7 @@ import bson
 import cherrypy
 import functools
 import os.path
+import pkg_resources
 import requests
 
 from .. import config

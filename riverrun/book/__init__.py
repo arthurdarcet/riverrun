@@ -1,13 +1,8 @@
-import logging
-import os.path
-
 from .. import config
 from .. import utils
 from .ebook import Ebook
 from .epub import Epub
 
-
-logger = logging.getLogger(__name__)
 
 class Book(utils.Model):
     collection = 'books'

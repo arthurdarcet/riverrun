@@ -1,6 +1,17 @@
 /.venv/
-/library/
 .DS_Store
 __pycache__
-*.pyc
-config/local.yaml
+*.py[co]
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+var
+sdist
+develop-eggs
+.installed.cfg
+
+/library/
