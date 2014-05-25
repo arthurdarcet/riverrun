@@ -7,8 +7,6 @@ import tempfile
 from .. import config
 
 
-_convert = sh.Command(config.convert)
-
 _mimetypes = {
     'epub': 'application/epub+zip',
     'mobi': 'application/x-mobipocket-ebook',
@@ -39,7 +37,7 @@ class Ebook:
         if self.extension == extension:
             return self
         tmp = tempfile.NamedTemporaryFile(suffix='.' + extension)
-        _convert(self.infile.name, tmp.name)
+        sh.Command(config.convert)(self.infile.name, tmp.name)
         return Ebook(tmp)
 
     def copy_to(self, path):
