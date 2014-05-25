@@ -1,0 +1,7 @@
+language: python
+services: mongodb
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+script: "python setup.py test"
