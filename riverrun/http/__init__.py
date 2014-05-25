@@ -3,7 +3,6 @@ import bson
 import cherrypy
 import functools
 import os.path
-import pkg_resources
 import requests
 
 from .. import config
@@ -90,8 +89,9 @@ class App(utils.BaseApp):
             return ebook.save()
 
 
-def start():
+def start(block=True):
     cherrypy.config.update(config.http)
     App().mount()
     cherrypy.engine.start()
-    cherrypy.engine.block()
+    if block:
+        cherrypy.engine.block()

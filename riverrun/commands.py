@@ -1,3 +1,4 @@
+from . import config
 from . import setup
 from .book import Book
 from .book import Ebook
@@ -7,6 +8,11 @@ def http(**kwargs):
     from . import http
     setup() # cherrypy LogManager is very stuborn
     http.start()
+
+def watch(**kwargs):
+    from . import watcher
+    setup()
+    watcher.start()
 
 def add_file(input, isbn=None, **kwargs):
     with Ebook(input[0]) as ebook:
@@ -28,3 +34,9 @@ def ensure_indexes(**kwargs):
         [('title', 'text'), ('authors', 'text'), ('description', 'text')],
         weights={'title': 5, 'authors': 5},
     )
+
+def run(**kwargs):
+    from . import http, watcher
+    setup()
+    http.start(block=False)
+    watcher.start()

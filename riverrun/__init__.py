@@ -82,6 +82,9 @@ class logging:
                 'cherrypy.error': {
                     'level': 'WARNING',
                 },
+                'pyinotify': {
+                    'level': 'INFO' if not args.quiet else 'WARNING',
+                },
             },
             'root': {
                 'handlers': ['console'],

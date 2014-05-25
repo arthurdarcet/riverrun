@@ -10,3 +10,5 @@ mongo:
 convert: ebook-convert
 
 library: "./library/{authors} - {title}.{ext}"
+
+watch: "./watch"
