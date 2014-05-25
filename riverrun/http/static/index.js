@@ -1,33 +1,18 @@
 Riverrun.Collections = {};
 Riverrun.Views = {};
 
-Riverrun.Views.Book = Backbone.View.extend({
-    events: {
-    },
-
-    initialize: function() {
-        this.model.on('change', _.bind(this.render, this));
-        this.render();
-    },
-
-    render: function() {
-        var html = Riverrun.templates.book(this.model.attributes);
-        var old_el = this.$el;
-        this.setElement(html);
-        old_el.replaceWith(this.$el);
-    }
-});
 
 Riverrun.Collections.Books = Backbone.Collection.extend({
     url: '/books',
     current_page: -1,
+    params: {},
 
     initialize: function() {
         this.container = $('.books');
 
         this.on('add', _.bind(function(model) {
-            model.view = new Riverrun.Views.Book({model: model});
-            this.container.append(model.view.$el);
+            var el = Riverrun.templates.book(model.attributes);
+            this.container.append(el);
         }, this));
     },
 
@@ -41,12 +26,43 @@ Riverrun.Collections.Books = Backbone.Collection.extend({
 
         $.ajax({
             type: 'GET',
-            url: this.url + '?' + $.param({page: this.current_page}),
+            url: this.url + '?' + $.param(_.extend({page: this.current_page}, this.params)),
             context: this
         }).done(function(data, status) {
+            if (this.current_page == 0) {
+                this.container.html('');
+                this.reset();
+            }
             this.add(data);
             this.loading = false;
         });
+    },
+
+    search: function(q) {
+        if (q) {
+            this.url = '/search';
+            this.params.q = q;
+        }
+        else {
+            this.url = '/books';
+            this.params = {};
+        }
+        this.current_page = -1;
+        this.load_next_page();
+    }
+});
+
+Riverrun.Views.SearchBar = Backbone.View.extend({
+    el: '.search input',
+    events: {
+        'keyup': 'keyup',
+    },
+
+    keyup: function(evt) {
+        evt.preventDefault();
+        if (evt.keyCode == 13 || Riverrun.books.params.q != this.$el.val()) {
+            Riverrun.books.search(this.$el.val());
+        }
     }
 });
 
@@ -55,6 +71,7 @@ $(document).ready(function() {
         book: Handlebars.compile($('#book-template').html())
     };
     Riverrun.books = new Riverrun.Collections.Books();
+    Riverrun.search_bar = new Riverrun.Views.SearchBar();
 
     Riverrun.books.load_next_page();
     $(window).scroll(function(){
