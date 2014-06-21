@@ -20,7 +20,7 @@
 .book .thumbnail {
     padding: 0;
     height: 302px;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .authors li:after {
